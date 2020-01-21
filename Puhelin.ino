@@ -15,81 +15,74 @@ void clearBuffer(){ //Puskurin tyhjennys funktio
 void setup() { //Asetukset
   modem.begin(9600); //Alustetaan modeemi
   Serial.begin(9600); //Alustetaan sarjaportti
-  delay(5000); //Viive
+  delay(500); //Viive
   clearBuffer(); //Suorittaa puskurin tyhjennys funktion
 }
 
-
-
-bool cmdAT(){ //Funktio joka lähettää AT komennon
-  modem.print("AT\r\n"); //Kirjoittaa AT modeemille
-  while(modem.available()<1){delay(10);}//Odotetaan vastausta
-  char c, i=0;
-  c=modem.read();// Määritä c=modeemin luku
-  while(c != -1){ //Kun modeemin vastaus on muuta kun -1
-    Serial.print(c); //Tulosta sarjaporttiin modeemin vastaus
-    c=modem.read(); //Lue modeemi
-    delay(20); //Viive
-    i++;
-    if(i==255){ //Koittaa 255 kertaa
-      return true;//TIMEOUT!
-    }
-  }
-  return false;
-}
-bool listAT () {
-  modem.print("AT+CMGL\r\n");
-  while(modem.available()<1){delay(10);}//Odotetaan vastausta
-  char c, i=0;
+bool cmdToModem(char* str) {
+  Serial.print("Kom: ");
+  Serial.println(str);
+  modem.print(str);
+  while(modem.available()<1){delay(2);}//Odotetaan vastausta
+  String ans;
+  char c;
+  int i=0;
   c=modem.read();
   while(c != -1){
-    Serial.print(c);
-    c=modem.read();
-    delay(20);
     i++;
-    if(i==255){
-      return true;//TIMEOUT!
+    ans.concat(c);//Miksi?
+    c=modem.read();
+    delay(3);
+    if(i == 500){
+      return true;//Joku vika
     }
   }
+  Serial.println(ans);
+  Serial.println(i);
+    
   return false;
 }
 
-bool readAT() {
-  modem.print("AT+CMGR=?\r\n");
-  while(modem.available()<1){delay(10);}//Odotetaan vastausta
-  char c, i=0;
-  c=modem.read();
-  while(c != -1){
-    Serial.print(c);
-    c=modem.read();
-    delay(20);
-    i++;
-    if(i==255){
-      return true;//TIMEOUT!
-    }
-  }
-  return false;
-}
  
 void loop(){
-  Serial.println(millis());
-  if(cmdAT()){
+/*  
+  if(cmdToModem("AT+CMGD=2,4\r\n")){
     Serial.println("Timeout");
     while(1);
   }
-  Serial.println("Alku");
-  Serial.println(millis());
-  if(listAT()){
-    Serial.println("Timeout 2");
+  clearBuffer();
+  delay(500);  
+*/
+  if(cmdToModem("AT\n")){
+    Serial.println("Timeout");
+    delay(1000);
     while(1);
   }
-  if(readAT()) {
-    Serial.println ("Timeout 3");
+  clearBuffer();
+  delay(500);
+  if(cmdToModem("AT+CMGF=1\r\n")){
+    Serial.println("Timeout");
     while(1);
-    Serial.println(millis());
-    
   }
-  Serial.println(millis());
+  clearBuffer();
+  delay(500);
+  if(cmdToModem("AT+CPMS=\"MT\",\"MT\",\"MT\"\r\n")){
+    Serial.println("Timeout");
+    while(1);
+  }
+  clearBuffer();
+  delay(500);
+  if(cmdToModem("AT+CMGL=\"REC READ\",0\r\n")){
+    Serial.println("Timeout");
+    while(1);
+  }
+  clearBuffer();
+  delay(500);
+  if(cmdToModem("AT+CMGR=3,0\r\n")){
+    Serial.println("Timeout");
+    while(1);
+  }
+  clearBuffer();
   delay(1000);
   Serial.println("Loppu");
   while(1);
