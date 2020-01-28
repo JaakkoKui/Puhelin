@@ -4,6 +4,9 @@
 #define kaiutin 13
 #define Button 2
 SoftwareSerial modem(PIN_RX,PIN_TX); //Määritetään pinnit
+const int trigPin = 5;
+const int echoPin = 4;
+
 
 
 void clearBuffer(){ //Puskurin tyhjennys funktio
@@ -21,6 +24,9 @@ void setup() { //Asetukset
   clearBuffer(); //Suorittaa puskurin tyhjennys funktion
   pinMode (kaiutin, OUTPUT);
   pinMode (Button, INPUT_PULLUP);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  alustaMittaus();
  }
 
 void sendSMS(String message) { //Viestin lähetys funktio
@@ -38,43 +44,7 @@ void sendSMS(String message) { //Viestin lähetys funktio
   delay(5000); // Annetaan modeemille aikaa lähettää viesti
 }
 
-void initModem(){
-
-  if(cmdToModem("AT\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-  if(cmdToModem("AT+CMGF=1\r\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-  if(cmdToModem("AT+CPMS=\"MT\",\"MT\",\"MT\"\r\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-  if(cmdToModem("AT+CMGL=\"REC READ\",0\r\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-  if(cmdToModem("AT+CMGR=3,0\r\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-  if(cmdToModem("AT+CNMI=2,2,0,0,0\r\n")){
-    Serial.println("Timeout");
-    while(1);
-  }
-   if(cmdToModem("AT+CMEE=1\r\n")){
-    Serial.println("Timeout");
-    while(1);
-   }
-   if (cmdToModem("ATA\r\n")) {
-    Serial.println ("Timeout");
-    while(1);
-   }
-
-
-bool cmdToModem(String str) { //Komentojen pohja
+bool cmdToModem(String str, String ans) { //Komentojen pohja
   Serial.print("Kom: "); //Kirjoittaa sarjaporttiin "Kom:"
   Serial.println(str); //Kirjoittaa sarjaporttiin komennon nimen
   modem.print(str); //Kirjoittaa moodemille komennon
@@ -82,54 +52,148 @@ bool cmdToModem(String str) { //Komentojen pohja
   String msg;
   msg=modem.readString();
   Serial.println(msg);
+  if(msg.indexOf(ans)>=0){
+    return false;//Odotettu vastaus
+  }
+  return true;
+}
+
+void initModem(){
+
+  if(cmdToModem("AT\r\n", "OK")){
+    Serial.println("ERROR: AT");
+    while(1);
+  }
+  if(cmdToModem("AT+CMGF=1\r\n", "OK")){
+    Serial.println("ERROR: CMGF");
+    while(1);
+  }
+  if(cmdToModem("AT+CPMS=\"MT\",\"MT\",\"MT\"\r\n", "OK")){
+    Serial.println("ERROR: CPMS");
+    while(1);
+  }
+  if(cmdToModem("AT+CMGL=\"REC READ\",0\r\n", "OK")){
+    Serial.println("ERROR: CMGL");
+    while(1);
+  }
+  if(cmdToModem("AT+CMGR=3,0\r\n", "OK")){
+    Serial.println("ERROR: CMGR");
+    while(1);
+  }
+  if(cmdToModem("AT+CNMI=2,2,0,0,0\r\n", "OK")){
+    Serial.println("ERROR: CNMI");
+    while(1);
+  }
+   if(cmdToModem("AT+CMEE=1\r\n", "OK")){
+    Serial.println("ERROR: CMEE");
+    while(1);
+   }
+    if(cmdToModem("AT+CLIP=1\r\n", "OK")){
+    Serial.println("ERROR: CLIP");
+    while(1);
+   }
+}
+
+unsigned long duration;
+unsigned long data[10]; // Globaali muuttuja mittaustiedon keskiarvoistusta varten
+int index=0;
+void alustaMittaus(){
+  Serial.println("Alusta mittaus");
+  for(int i=0;i<10;i++){
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(trigPin, LOW);
+    data[i] = pulseIn(echoPin, HIGH);
+    Serial.println(data[i]);
+  }
+}
+int distanceCm;
+
+void mittaus(){
+ 
+ for(int i=0;i<10;i++){
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  data[index++] = pulseIn(echoPin, HIGH);
+  data[i] = pulseIn(echoPin, HIGH);
+    distanceCm = data[i]*0.034/2;
+    Serial.println(distanceCm);
+  }
+  if(index==10){
+    index=0;
     
-  return false;
+  }
+  unsigned long d=0;
+  for(int i=0;i<10;i++){
+    d += data[i];
+  }
+  duration = d/10;
+
 }
 
 
-void loop(){
-  initModem(); //Modeemin alustus
-  
-  
+void checkMessages(){
+  Serial.read();
 
- 
-      
-  while(1){
+  if (modem.available() > 0) {
+    String textMessage = modem.readString();
+    Serial.print(textMessage);
+    delay(10);
     
-    if (modem.available() > 0) {
-      String textMessage = modem.readString();
-      Serial.print(textMessage);
-      delay(10);
-     
-      if (textMessage.indexOf("Korkea") >= 0) {
-        tone(kaiutin, 2000, 1000);
-        textMessage = "";
-        String message = "Arsyttaako?";
-        sendSMS(message);
-      }
-      if (textMessage.indexOf("Delete") >= 0) {
-        cmdToModem("AT+CMGD=2,4\r\n");
-        textMessage = "";
-        String message = "Tyhjennetty";
-        sendSMS(message);
-      }
-       if (textMessage.indexOf("Matala") >= 0) {
-        tone(kaiutin, 100, 1000);
-        textMessage = "";
-        String message = "Arsyttaako?";
-        sendSMS(message);
-       }
-       int x = digitalRead(Button);
-       if (x == LOW) {
-        Serial.println("kakka");
-        
-      }
-      if (textMessage.indexOf(".") >= 0) {
-        String message = "Hävisit pelin";
-        sendSMS(message);
+    if (textMessage.indexOf("Korkea") >= 0) {
+      tone(kaiutin, 2000, 1000);
+      //textMessage = "";
+      String message = "Arsyttaako?";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf("Delete") >= 0) {
+      cmdToModem("AT+CMGD=2,4\r\n", "OK");
+      textMessage = "";
+      String message = "Tyhjennetty";
+      sendSMS(message);
+    }
+    if  (textMessage.indexOf("Matala") >= 0) {
+      tone(kaiutin, 100, 1000);
+      // textMessage = "";
+      String message = "Arsyttaako?";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf(".") >= 0) {
+      String message = "Hävisit pelin";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf("RING") >= 0) {
+      if (cmdToModem("ATA\r\n", "OK")) {
+        Serial.println ("Timeout");
         
       }
     }
   }
+ }
+
+
+
+void loop(){
+  initModem();//Modeemin alustus
+  checkMessages();
+  mittaus();
+  while(1){
+    int x = digitalRead(Button);
+    if (x == LOW) {
+      Serial.println("ABC");
+      String message = "Moi";
+      sendSMS(message);
+      delay(1500);      
+    }
+  }  
+    
+    
+
+if (distanceCm < 10){ 
+ String message = "Havisit pelin";
+      sendSMS(message);
+  tone(kaiutin, 1600, 2000);
 }
-  
+checkMessages();
+ }
