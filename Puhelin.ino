@@ -88,13 +88,12 @@ void initModem(){
     Serial.println("ERROR: CMEE");
     while(1);
    }
-    if(cmdToModem("AT+CLIP=1\r\n", "OK")){
+  if(cmdToModem("AT+CLIP=1\r\n", "OK")){
     Serial.println("ERROR: CLIP");
     while(1);
-   }
+ }
 }
 
-unsigned long duration;
 unsigned long data[10]; // Globaali muuttuja mittaustiedon keskiarvoistusta varten
 int index=0;
 void alustaMittaus(){
@@ -110,6 +109,25 @@ void alustaMittaus(){
 int distanceCm;
 
 void mittaus(){
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  data[index++] = pulseIn(echoPin, HIGH);
+  if(index==10){
+    index=0;
+  }
+  unsigned long d=0;
+  for(int i=0;i<10;i++){
+    d += data[i];
+  }
+  distanceCm = (d/10)*0.034/2;
+  Serial.println(distanceCm);
+}
+
+
+
+
+void _mittaus(){
  
  for(int i=0;i<10;i++){
   digitalWrite(trigPin, HIGH);
@@ -128,7 +146,7 @@ void mittaus(){
   for(int i=0;i<10;i++){
     d += data[i];
   }
-  duration = d/10;
+//  duration = d/10;
 
 }
 
@@ -176,8 +194,7 @@ void checkMessages(){
 
 void loop(){
   initModem();//Modeemin alustus
-  checkMessages();
-  mittaus();
+  Serial.println("Init modem OK");
   while(1){
     int x = digitalRead(Button);
     if (x == LOW) {
@@ -186,14 +203,7 @@ void loop(){
       sendSMS(message);
       delay(1500);      
     }
-  }  
-    
-    
-
-if (distanceCm < 10){ 
- String message = "Havisit pelin";
-      sendSMS(message);
-  tone(kaiutin, 1600, 2000);
+    mittaus();
+    checkMessages();
+  }
 }
-checkMessages();
- }
