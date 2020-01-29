@@ -4,7 +4,7 @@
 #include <SoftwareSerial.h> //Kirjasto 
 #define PIN_RX    7 //Pinnit laitteiden väliseen keskusteluun
 #define PIN_TX    8
-#define kaiutin 13
+#define kaiutin 11
 #define Button 2
 
 const int trigPin = 5;
@@ -16,6 +16,6 @@ void initModem();
 void sendSMS(String);
 void mittaus();
 void checkMessages();
-void alustaMittaus();
 bool cmdToModem(String str, String ans);
+
 #endif

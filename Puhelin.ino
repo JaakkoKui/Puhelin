@@ -24,7 +24,6 @@ void loop(){
       sendSMS(message);
       delay(1500);      
     }
-    mittaus();
     checkMessages();
   }
 }
