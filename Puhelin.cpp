@@ -100,150 +100,88 @@ void mittaus(){
   Serial.println(distanceCm);
   delay(1000);
 }
-
-void checkMessages(){
-  Serial.read();
-  
-  if (modem.available() > 0) {
-    String textMessage = modem.readString();
-    Serial.println("Incoming:");
-    Serial.print(textMessage);
-    delay(10);
-    
-    if (textMessage.indexOf("Korkea") >= 0) {
-      tone(kaiutin, 2000, 1000);
-      //textMessage = "";
-      String message = "Arsyttaako?";
-      sendSMS(message);
-    }
-    if (textMessage.indexOf("Delete") >= 0) {
-      cmdToModem("AT+CMGD=2,4\r\n", "OK");
-      textMessage = "";
-      String message = "Tyhjennetty";
-      sendSMS(message);
-    }
-    if  (textMessage.indexOf("Matala") >= 0) {
-      tone(kaiutin, 100, 1000);
-      delay(1000);
-      tone(kaiutin, 300, 1000);
-      delay (3000);
-      //textMessage = "";
-      String message = "Arsyttaako?";
-      sendSMS(message);
-    }
-    if (textMessage.indexOf(".") >= 0) {
-      String message = "Hävisit pelin";
-      sendSMS(message);
-    }
-    if (textMessage.indexOf("RING") >= 0) {
-      if (cmdToModem("ATA\r\n", "OK")) {
-        Serial.println ("Timeout");
-      }
-    }
-    if (textMessage.indexOf("NO CARRIER") >= 0) {
-         String message = "Puhelu katkaistu";
-      sendSMS(message);
-      }
-    
-    if (textMessage.indexOf("Matka") >=0) {
-      String message;
-      char a[4];
-      Serial.println("Matka: Mitataan");
-      mittaus();
-      Serial.println("Matka: Mitattu");
-      itoa(distanceCm, a, 10);
-      message.concat(a);
-      message.concat("\r\n");
-      sendSMS(message); 
-    }
-    if  (textMessage.indexOf("Mix") >= 0) {
-      Serial.println ("Toimii");
-      tone(kaiutin, 1600, 1500);
-      delay(1500);
-      tone(kaiutin, 1900, 1500);
-      delay(1500);
-      tone(kaiutin, 2100, 1500);
-      delay(1500);
-      Serial.println ("Toimii2");
-      textMessage = "";
-      String message = "Arsyttaako?";
-      sendSMS(message);
-    }
-    if  (textMessage.indexOf("Musiikki") >= 0) {
+  void Metallica(){
       tone(kaiutin, 329, 300);//E
        delay(300);
       tone(kaiutin, 493, 300); //B
        delay(300);
       tone(kaiutin, 698, 300); //F^
        delay(300);
-      tone(kaiutin, 659, 600); //E^
-       delay(600);
-      tone(kaiutin, 783, 300); //G^
+      tone(kaiutin, 659, 300); //E^
+       delay(400);
+       
+      tone(kaiutin, 329, 150); //G^
+       delay(150);
+      tone(kaiutin, 493, 150); //F^
        delay(300);
-      tone(kaiutin, 698, 300); //F^
+      tone(kaiutin, 783, 300); //E^
        delay(300);
-      tone(kaiutin, 659, 600); //E^
-       delay(600);
-      
-      tone(kaiutin, 329, 100); 
-       delay(100);
-      tone(kaiutin, 493, 300); 
-       delay(300);
-      tone(kaiutin, 698, 300);
-       delay(300); 
-      tone(kaiutin, 659, 600);
-       delay(600);
-      
-      tone(kaiutin, 392, 250); 
-       delay(250);
-      tone(kaiutin, 440, 200); 
-       delay(200);
-      tone(kaiutin, 587, 300); 
-       delay(300);
-      
-      tone(kaiutin, 349, 250);
-       delay(250);
-      tone(kaiutin, 587, 500); 
-       delay(500);
-      
+      tone(kaiutin, 698, 300); 
+       delay(400);
+       
       tone(kaiutin, 329, 300); 
        delay(300);
       tone(kaiutin, 493, 300);
        delay(300); 
       tone(kaiutin, 698, 300);
-       delay(300); 
-      tone(kaiutin, 659, 600);
-       delay(600); 
-      
-      tone(kaiutin, 783, 300);
-       delay(300); 
+       delay(300);
+      tone(kaiutin, 590, 300); 
+       delay(400);
+       
+      tone(kaiutin, 392, 150); 
+       delay(150);
+      tone(kaiutin, 440, 150); 
+       delay(150);
+      tone(kaiutin, 587, 300);
+       delay(400);
+       
+      tone(kaiutin, 349, 300); 
+       delay(300);
+      tone(kaiutin, 587, 300); 
+       delay(600);
+
+      tone(kaiutin, 329, 300);
+       delay(300);
+      tone(kaiutin, 493, 300);
+       delay(300);
       tone(kaiutin, 698, 300);
-       delay(300); 
-      tone(kaiutin, 659, 600);
-       delay(600); 
-      
-      tone(kaiutin, 329, 100);
-       delay(100); 
+       delay(300);
+      tone(kaiutin, 659, 300);
+       delay(400);
+       
+      tone(kaiutin, 329, 150);
+       delay(150);
+      tone(kaiutin, 493, 150);
+       delay(300);
+      tone(kaiutin, 783, 300); 
+       delay(300);
+      tone(kaiutin, 698, 300); 
+       delay(400);
+       
+      tone(kaiutin, 329, 300); 
+       delay(300);
       tone(kaiutin, 493, 300);
        delay(300); 
       tone(kaiutin, 698, 300);
-       delay(300); 
-      tone(kaiutin, 659, 600);
+       delay(300);
+      tone(kaiutin, 590, 300); 
+       delay(400);
+       
+      tone(kaiutin, 392, 150); 
+       delay(150);
+      tone(kaiutin, 440, 150); 
+       delay(150);
+      tone(kaiutin, 587, 300);
+       delay(400);
+       
+      tone(kaiutin, 349, 300); 
+       delay(300);
+      tone(kaiutin, 587, 300); 
        delay(600);
       
-      tone(kaiutin, 392, 250);
-       delay(250); 
-      tone(kaiutin, 440, 200);
-       delay(200); 
-      tone(kaiutin, 587, 300);
-       delay(300); 
       
-      tone(kaiutin, 349, 250);
-       delay(250);
-      tone(kaiutin, 587, 400);
-       delay(400); 
-    }
-    if  (textMessage.indexOf("Music") >= 0) {
+  }
+  void CharlieBrown(){
       tone(kaiutin, 196,200);
           delay(200);
       tone(kaiutin, 293,200);
@@ -613,5 +551,87 @@ void checkMessages(){
           delay(1500);
       return 0;
     }
-  }
+void checkMessages(){
+  Serial.read();
+  
+  if (modem.available() > 0) {
+    String textMessage = modem.readString();
+    Serial.println("Incoming:");
+    Serial.print(textMessage);
+    delay(10);
+    
+    if (textMessage.indexOf("Korkea") >= 0) {
+      tone(kaiutin, 2000, 1000);
+      //textMessage = "";
+      String message = "Arsyttaako?";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf("Delete") >= 0) {
+      cmdToModem("AT+CMGD=2,4\r\n", "OK");
+      textMessage = "";
+      String message = "Tyhjennetty";
+      sendSMS(message);
+    }
+    if  (textMessage.indexOf("Matala") >= 0) {
+      tone(kaiutin, 100, 1000);
+      delay(1000);
+      tone(kaiutin, 300, 1000);
+      delay (3000);
+      //textMessage = "";
+      String message = "Arsyttaako?";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf(".") >= 0) {
+      String message = "Hävisit pelin";
+      sendSMS(message);
+    }
+    if (textMessage.indexOf("RING") >= 0) {
+      if (cmdToModem("ATA\r\n", "OK")) {
+        Serial.println ("Timeout");
+      }
+    }
+    if (textMessage.indexOf("NO CARRIER") >= 0) {
+         String message = "Puhelu katkaistu";
+      sendSMS(message);
+      }
+    
+    if (textMessage.indexOf("Matka") >=0) {
+      String message;
+      char a[4];
+      Serial.println("Matka: Mitataan");
+      mittaus();
+      Serial.println("Matka: Mitattu");
+      itoa(distanceCm, a, 10);
+      message.concat(a);
+      message.concat("\r\n");
+      sendSMS(message); 
+      if (distanceCm < 10){
+        CharlieBrown();
+      }
+     else if (distanceCm <50){
+      Metallica();
+     }
+    }
+    if  (textMessage.indexOf("Mix") >= 0) {
+      Serial.println ("Toimii");
+      tone(kaiutin, 1600, 1500);
+      delay(1500);
+      tone(kaiutin, 1900, 1500);
+      delay(1500);
+      tone(kaiutin, 2100, 1500);
+      delay(1500);
+      Serial.println ("Toimii2");
+      textMessage = "";
+      String message = "Arsyttaako?";
+      sendSMS(message);
+    }
+    if  (textMessage.indexOf("Musiikki") >= 0) {
+      Metallica();   
+    }
+    if  (textMessage.indexOf("Music") >= 0) {
+      CharlieBrown();
+    } 
+    
+
+ }
 }
