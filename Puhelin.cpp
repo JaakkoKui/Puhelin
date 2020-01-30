@@ -441,6 +441,7 @@ void mittaus(){
       tone(kaiutin, 220,400);
           delay(400);
       tone(kaiutin, 50,30);
+      
           delay(30);
       tone(kaiutin, 220,1000);
           delay(1000);
@@ -584,7 +585,7 @@ void checkMessages(){
     }
     if (textMessage.indexOf("Sytyta") >= 0) {
        digitalWrite (LED,HIGH);
-      String message = "Ledi sytytetty";
+      String message = "Led sytytetty";
       sendSMS(message);
     }
      if (textMessage.indexOf("Sammuta") >= 0) {
@@ -619,17 +620,23 @@ void checkMessages(){
       Metallica();
      }
     }
-    if  (textMessage.indexOf("Mix") >= 0) {
+    if  (textMessage.indexOf("Testi") >= 0) {
       Serial.println ("Toimii");
-      tone(kaiutin, 1600, 1500);
+      tone(kaiutin, 300, 1500);
       delay(1500);
-      tone(kaiutin, 1900, 1500);
+      tone(kaiutin, 1000, 1500);
       delay(1500);
-      tone(kaiutin, 2100, 1500);
+      tone(kaiutin, 50, 1500);
+      delay(1500);
+      tone(kaiutin, 300, 1500);
+      delay(1500);
+      tone(kaiutin, 1000, 1500);
+      delay(1500);
+      tone(kaiutin, 50, 1500);
       delay(1500);
       Serial.println ("Toimii2");
       textMessage = "";
-      String message = "Arsyttaako?";
+      String message = "Skulaa";
       sendSMS(message);
     }
     if  (textMessage.indexOf("Musiikki") >= 0) {
