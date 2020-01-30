@@ -7,11 +7,7 @@ void setup() { //Asetukset
   Serial.begin(9600); //Alustetaan sarjaportti
   delay(500); //Viive
   clearBuffer(); //Suorittaa puskurin tyhjennys funktion
- 
-
-
  }
-
 
 void loop(){
   initModem();//Modeemin alustus

@@ -6,6 +6,7 @@
 #define PIN_TX    8
 #define kaiutin 11
 #define Button 2
+#define LED 3
 
 const int trigPin = 5;
 const int echoPin = 4;

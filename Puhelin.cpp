@@ -79,10 +79,11 @@ void sendSMS(String message) { //Viestin lähetys funktio
 }
 
 void pinmode() {
-  pinMode (kaiutin, OUTPUT);
-  pinMode (Button, INPUT_PULLUP);
+  pinMode(kaiutin, OUTPUT);
+  pinMode(Button, INPUT_PULLUP);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
+  pinMode(LED, OUTPUT);
 }
 
 int distanceCm;
@@ -563,7 +564,7 @@ void checkMessages(){
     if (textMessage.indexOf("Korkea") >= 0) {
       tone(kaiutin, 2000, 1000);
       //textMessage = "";
-      String message = "Arsyttaako?";
+      String message = "Piip!";
       sendSMS(message);
     }
     if (textMessage.indexOf("Delete") >= 0) {
@@ -578,11 +579,17 @@ void checkMessages(){
       tone(kaiutin, 300, 1000);
       delay (3000);
       //textMessage = "";
-      String message = "Arsyttaako?";
+      String message = "Beepboop";
       sendSMS(message);
     }
-    if (textMessage.indexOf(".") >= 0) {
-      String message = "Hävisit pelin";
+    if (textMessage.indexOf("Sytyta") >= 0) {
+       digitalWrite (LED,HIGH);
+      String message = "Ledi sytytetty";
+      sendSMS(message);
+    }
+     if (textMessage.indexOf("Sammuta") >= 0) {
+      digitalWrite (LED,LOW);
+      String message = "Ledi sammutettu";
       sendSMS(message);
     }
     if (textMessage.indexOf("RING") >= 0) {
