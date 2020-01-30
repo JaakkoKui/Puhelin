@@ -441,7 +441,6 @@ void mittaus(){
       tone(kaiutin, 220,400);
           delay(400);
       tone(kaiutin, 50,30);
-      
           delay(30);
       tone(kaiutin, 220,1000);
           delay(1000);
